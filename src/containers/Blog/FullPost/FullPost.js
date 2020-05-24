@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import axios from "axios";
 
+
 import classes from './FullPost.module.css';
 
 class FullPost extends Component {
@@ -9,18 +10,28 @@ class FullPost extends Component {
         selectedPost: null
     }
 
+    componentDidMount() {
+        this.loadData();
+    }
+
     componentDidUpdate(prevProps, prevState, snapshot) {
-        if (this.props.selectedId) {
-            if ((this.state.selectedPost === null) || (this.state.selectedPost && this.state.selectedPost.id !== this.props.selectedId))
-                axios.get("/posts/" + this.props.selectedId).then(
+        this.loadData();
+    }
+
+    loadData() {
+
+        if (this.props.match.params.id) {
+            if ((this.state.selectedPost === null) || (this.state.selectedPost && this.state.selectedPost.id != this.props.match.params.id))
+                axios.get("/posts/" + this.props.match.params.id).then(
                     response => {
                         this.setState({selectedPost: response.data})
                     }
                 )
         }
     }
+
     deletePostHandler = () => {
-        axios.delete("/posts/" + this.props.selectedId).then(
+        axios.delete("/posts/" + this.props.match.params.id).then(
             (response) => {
                 console.log(response);
             }
@@ -29,7 +40,7 @@ class FullPost extends Component {
 
     render() {
         let post = <p style={{textAlign: 'center'}}>Please select a Post!</p>;
-        if (this.props.selectedId) {
+        if (this.props.match.params.id) {
             post = <p style={{textAlign: 'center'}}>Loading.....!</p>;
         }
         if (this.state.selectedPost) {
